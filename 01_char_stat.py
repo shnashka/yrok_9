@@ -10,8 +10,6 @@ class Stat_counting(metaclass=ABCMeta):
         self.alpha_counter = 0
 
     def statistics(self):
-        self.statistic = {}
-        alpha_counter = 0
         with open(self.file_name, 'r', encoding='cp1251') as file:
             for line in file:
                 for char in line:
@@ -20,7 +18,5 @@ class Stat_counting(metaclass=ABCMeta):
                             self.statistic[char] += 1
                         else:
                             self.statistic[char] = 1
-        for key in self.statistic:
-            alpha_counter += self.statistic[key]
-        self.alpha_counter = alpha_counter
-
+        for key, item in self.statistic.items():
+            self.alpha_counter += item
