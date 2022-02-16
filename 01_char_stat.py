@@ -1,25 +1,36 @@
-import zipfile
-from abc import ABCMeta, abstractmethod
-
-
-class Stat_counting(metaclass=ABCMeta):
-    def __init__(self, file_name):
-        self.statistic = {}
-        self.sorted_static = []
+class StatCounter:
+    def __init__(self, file_name, sort_method='Ascending'):
         self.file_name = file_name
+        self.stat = {}
+        self.sort_method = sort_method
         self.alpha_counter = 0
+        self.sorted_static = []
 
-    def statistics(self):
+    def collect_stat(self):
+
         with open(self.file_name, 'r', encoding='cp1251') as file:
             for line in file:
                 for char in line:
                     if char.isalpha():
-                        if char in self.statistic:
-                            self.statistic[char] += 1
+                        if char in self.stat:
+                            self.stat[char] += 1
                         else:
-                            self.statistic[char] = 1
-        for key, item in self.statistic.items():
-            self.alpha_counter += item
+                            self.stat[char] = 1
+                        self.alpha_counter += 1
+
+    def sorting(self):
+
+        for key, value in self.stat.items():
+            self.sorted_static.append([key, value])
+        match self.sort_method:
+            case 'Ascending':
+                self.sorted_static.sort(key=lambda val: val[1], reverse=False)
+            case 'Descending':
+                self.sorted_static.sort(key=lambda val: val[1], reverse=True)
+            case 'abcAscending':
+                self.sorted_static.sort(key=lambda val: val[0], reverse=False)
+            case 'abcDescending':
+                self.sorted_static.sort(key=lambda val: val[0], reverse=True)
 
     def print_stat(self):
         print('+---------+----------+')
@@ -31,38 +42,11 @@ class Stat_counting(metaclass=ABCMeta):
         print('|  Итого  |{:^10}|'.format(self.alpha_counter))
         print('+---------+----------+')
 
-    @abstractmethod
-    def _stats(self):
-        pass
-    def do_anal(self):
-        self._stats()
-        self.statistics()
+    def do_it(self):
+        self.collect_stat()
+        self.sorting()
         self.print_stat()
 
 
-
-class key_up(Stat_counting):
-    def _stats(self):
-        self._stats = sorted(self.statistic.items(), key=lambda x: x[0])
-
-
-class key_doun(Stat_counting):
-    def sort_result(self):
-         self._stats = sorted(self.statistic.items(), key=lambda x: x[1], reverse=True)
-
-
-class sourt_down(Stat_counting):
-    def sort_result(self):
-        self.sorted_static.clear()
-        self.sorted_static = sorted(self.statistic.items())
-
-
-class sourt_up(Stat_counting):
-    def sort_result(self):
-        self.sorted_static.clear()
-        self.sorted_static = sorted(self.statistic.items(), reverse=True)
-
-
-file_path = "voyna-i-mir.txt"
-ta = key_up(file_path)
-ta.do_anal()
+counter = StatCounter(file_name='voyna-i-mir.txt', sort_method='Ascending')  # 'Ascending'-по возрастанию частоты;
+counter.do_it()
